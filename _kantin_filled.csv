@@ -1,0 +1,162 @@
+No,Nama Menu,Tipe Makanan,Harga,Manis,Pahit,Asin,Asam,Pedas,Kategori,Tipe_Makanan_Simplified,Kode_Vendor
+1,Ayam rica,Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,7
+2,Ayam masak bumbu thaican,Lauk,"Rp8,000",2,0,3,1,3,condiment,Lauk,7
+3,Ayam cabe garam,Lauk,"Rp8,000",0,0,3,0,4,condiment,Lauk,7
+4,Ayam tim,Lauk,"Rp8,000",1,0,3,1,1,condiment,Lauk,6
+5,Ayam jamur,Lauk,"Rp8,000",1,1,3,0,1,condiment,Lauk,6
+6,Ikan dori goreng tepung,Lauk,"Rp8,000",0,0,3,1,1,condiment,Lauk,6
+7,Ayam pop corn,Lauk,"Rp8,000",1,0,2,0,2,condiment,Lauk,7
+8,Bakwan sayur,Gorengan,"Rp2,000",1,0,2,0,1,condiment,Lauk,7
+9,Perkedel jagung,Gorengan,"Rp2,000",2,0,2,0,1,condiment,Lauk,7
+10,Tempe goreng,Pendamping,"Rp3,000",1,1,2,0,1,condiment,Lauk,6
+11,Sup suki 5k,Sayur,"Rp5,000",1,0,3,1,2,condiment,Sayur,6
+12,Sayur capcay,Sayur,"Rp3,000",1,1,2,0,2,condiment,Sayur,7
+13,Tempe bacem 3k/pcs,Pendamping,"Rp3,000",3,1,2,1,1,condiment,Lauk,6
+14,Tahu bacem  3k/pcs,Pendamping,"Rp3,000",3,1,2,1,1,condiment,Lauk,7
+15,Telur  sambal bawang,Pendamping,"Rp3,000",1,0,3,0,3,condiment,Lauk,7
+16,Telur mata sapi,Pendamping,"Rp3,000",0,0,2,0,0,condiment,Lauk,6
+17,Telur dadar,Pendamping,"Rp3,000",0,0,2,0,0,condiment,Lauk,6
+18,Chicken grill 10k,Lauk,"Rp10,000",2,0,3,0,2,condiment,Lauk,6
+19,Chicken crispy 10k,Lauk,"Rp10,000",1,0,3,0,2,condiment,Lauk,7
+20,Fish n chips,Lauk,"Rp8,000",0,0,3,1,1,condiment,Lauk,7
+21,Chicken popcorn,Lauk,"Rp8,000",1,0,2,0,2,condiment,Lauk,7
+22,Mac n cheese 5k,Lainnya,"Rp5,000",3,1,3,0,0,condiment,Lainnya,7
+23,Spagethi 5k,Lainnya,"Rp5,000",2,0,3,1,1,condiment,Lainnya,6
+24,Salad 5k,Lainnya,"Rp5,000",2,1,1,1,0,condiment,Lainnya,7
+25,Sup jagung,Sayur,"Rp3,000",3,0,2,0,0,condiment,Sayur,7
+26,Cah buncis,Lainnya,"Rp5,000",1,1,2,0,2,condiment,Lainnya,6
+27,Telur  balado,Pendamping,"Rp3,000",1,0,3,0,4,condiment,Lauk,6
+28,Ayam black sambal mata,Lauk,"Rp8,000",0,1,3,0,4,condiment,Lauk,7
+29,Ikan tuna tumis Lombok,Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,6
+30,Cah buncis,Lainnya,"Rp5,000",1,1,2,0,2,condiment,Lainnya,7
+31,Chicken popcorn,Lauk,"Rp8,000",1,0,2,0,2,condiment,Lauk,7
+32,Ayam bakar,Lauk,"Rp8,000",2,0,3,1,3,condiment,Lauk,7
+33,Tahu crispy,Pendamping,"Rp3,000",0,0,2,0,1,condiment,Lauk,6
+34,Sayur capcay,Sayur,"Rp3,000",1,1,2,0,2,condiment,Sayur,6
+35,Ayam oseng bawang,Lauk,"Rp8,000",1,0,3,0,3,condiment,Lauk,7
+36,Ikan tuna balado,Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,6
+37,Mie goreng,Lainnya,"Rp5,000",2,0,3,1,2,condiment,Lainnya,7
+38,Ayam sate,Lauk,"Rp8,000",3,0,3,0,2,condiment,Lauk,6
+39,Ayam sate,Lauk,"Rp8,000",3,0,3,0,2,condiment,Lauk,6
+40,Ayam saos telur  asin,Lauk,"Rp8,000",2,1,4,0,1,condiment,Lauk,7
+41,Perkedel jagung,Gorengan,"Rp2,000",2,0,2,0,1,condiment,Lauk,7
+42,Tahu saos tomat,Pendamping,"Rp3,000",2,0,2,2,0,condiment,Lauk,6
+43,Mie goreng,Lainnya,"Rp5,000",2,0,3,1,2,condiment,Lainnya,6
+44,Cah labu siam,Sayur,"Rp3,000",1,0,2,0,1,condiment,Sayur,7
+45,Sayur Gelang,Sayur,"Rp3,000",1,1,2,0,1,condiment,Sayur,6
+46,"Ikan tuna crispy saos dabu""",Lauk,"Rp8,000",1,0,3,2,3,condiment,Lauk,6
+47,Mie laut pedas,Lainnya,"Rp5,000",1,0,3,1,4,condiment,Lainnya,6
+48,Terong balado,Sayur,"Rp3,000",1,0,3,0,4,condiment,Sayur,6
+49,Telur balado,Pendamping,"Rp3,000",1,0,3,0,4,condiment,Lauk,6
+50,Ayam kari,Lauk,"Rp8,000",3,1,3,1,2,condiment,Lauk,7
+51,Ayam goreng rempah,Lauk,"Rp8,000",1,1,3,0,2,condiment,Lauk,6
+52,Cumi ring crispy daun jeruk,Lainnya,"Rp5,000",1,0,2,1,2,condiment,Lainnya,7
+53,Sambel goreng,Lainnya,"Rp5,000",0,0,3,0,4,condiment,Lainnya,6
+54,Lode labu Siam,Sayur,"Rp3,000",1,0,2,1,1,condiment,Sayur,7
+55,Sayur Tuktuk (daun singkong),Sayur,"Rp3,000",0,2,3,1,2,condiment,Sayur,7
+56,Telur kari,Pendamping,"Rp3,000",2,0,3,0,2,condiment,Lauk,6
+57,Ayam suwir,Lauk,"Rp8,000",1,0,3,0,2,condiment,Lauk,7
+58,Ikan tuna balado,Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,6
+59,Tempe bacem,Pendamping,"Rp3,000",3,1,2,1,1,condiment,Lauk,7
+60,Cah buncis labu siam,Sayur,"Rp3,000",1,1,2,0,1,condiment,Sayur,6
+61,Bihun goreng,Lainnya,"Rp5,000",2,0,3,1,2,condiment,Lainnya,6
+62,Telur dadar daun bawang,Pendamping,"Rp3,000",1,0,2,0,0,condiment,Lauk,7
+63,Chicken grill,Lauk,"Rp8,000",2,0,3,0,2,condiment,Lauk,7
+64,Chicken crispy,Lauk,"Rp8,000",1,0,3,0,2,condiment,Lauk,7
+65,Telur  dadar bawang,Pendamping,"Rp3,000",0,0,2,0,0,condiment,Lauk,6
+66,Ayam dangkot,Lauk,"Rp8,000",1,0,3,1,3,condiment,Lauk,7
+67,Cumi ring crispy,Lainnya,"Rp5,000",1,0,2,1,2,condiment,Lainnya,6
+68,Sup tahu,Pendamping,"Rp3,000",1,0,3,1,0,condiment,Lauk,6
+69,Ayam goreng serundeng 15k (paha/dada),Lauk,"Rp15,000",1,1,3,0,2,condiment,Lauk,7
+70,Sosis chilipadi,Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,6
+71,Tahu balado,Pendamping,"Rp3,000",1,0,3,0,4,condiment,Lauk,7
+72,Terong saos kacang,Sayur,"Rp3,000",2,0,3,1,2,condiment,Sayur,6
+73,Ayam kecap (paha/dada/sayap),Lauk,"Rp8,000",3,0,3,0,1,condiment,Lauk,6
+74,Ayam saos Chilipadi,Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,7
+75,Tahu kecap,Pendamping,"Rp3,000",3,0,3,0,0,condiment,Lauk,7
+76,Sup kacang merah,Sayur,"Rp3,000",2,0,2,1,1,condiment,Sayur,6
+77,Sayur lodeh buncis,Sayur,"Rp3,000",1,0,2,1,1,condiment,Sayur,7
+78,Telur dadar,Pendamping,"Rp3,000",0,0,2,0,0,condiment,Lauk,6
+79,Ayam saos Mayones,Lauk,"Rp8,000",2,1,2,1,0,condiment,Lauk,7
+80,Cumi crispy,Lainnya,"Rp5,000",0,0,3,0,2,condiment,Lainnya,7
+81,Tempe kecap,Pendamping,"Rp3,000",3,1,2,0,1,condiment,Lauk,6
+82,Cah Paria,Sayur,"Rp3,000",0,3,2,1,2,condiment,Sayur,6
+83,Cah labu Siam,Sayur,"Rp3,000",1,0,2,0,1,condiment,Sayur,6
+84,Gulai jantung pisang,Lainnya,"Rp5,000",3,1,3,1,2,condiment,Lainnya,6
+85,Ayam  kecap,Lauk,"Rp8,000",3,0,3,0,1,condiment,Lauk,6
+86,Ayam saos BBQ,Lauk,"Rp8,000",3,0,3,0,2,condiment,Lauk,7
+87,Cumi saos Padang,Lainnya,"Rp5,000",1,0,3,1,3,condiment,Lainnya,6
+88,Tahu balado,Pendamping,"Rp3,000",1,0,3,0,4,condiment,Lauk,7
+89,Tumis pakis bunga kates,Lainnya,"Rp5,000",0,2,2,1,2,condiment,Lainnya,6
+90,Tempe kecap,Pendamping,"Rp3,000",3,1,2,0,1,condiment,Lauk,7
+91,Cah labu Siam,Sayur,"Rp3,000",1,0,2,0,1,condiment,Sayur,6
+92,Chiken grill,Lainnya,"Rp5,000",2,0,3,0,2,condiment,Lainnya,7
+93,Ayam  pop,Lauk,"Rp8,000",1,0,2,0,1,condiment,Lauk,7
+94,Ayam goreng ketumbar,Lauk,"Rp8,000",1,1,3,0,2,condiment,Lauk,7
+95,Sayur rebus daun singkong,Sayur,"Rp3,000",0,2,2,1,1,condiment,Sayur,6
+96,Sayur pakis bunga pepaya,Sayur,"Rp3,000",0,2,2,1,2,condiment,Sayur,7
+97,Ayam cabe garam,Lauk,"Rp8,000",0,0,3,0,4,condiment,Lauk,7
+98,Sop makaroni,Sayur,"Rp3,000",1,0,3,1,1,condiment,Sayur,6
+99,Tumis sawi,Lainnya,"Rp5,000",1,1,2,0,2,condiment,Lainnya,7
+100,Telur balado,Pendamping,"Rp3,000",1,0,3,0,4,condiment,Lauk,7
+101,Ayam woku,Lauk,"Rp8,000",2,1,3,1,3,condiment,Lauk,7
+102,Ayam crispy (paha/dada/Sayap),Lauk,"Rp8,000",1,0,3,0,2,condiment,Lauk,6
+103,Sayur sop,Sayur,"Rp3,000",1,0,3,1,1,condiment,Sayur,6
+104,Telur ceplok tomat,Pendamping,"Rp3,000",1,0,2,2,1,condiment,Lauk,7
+105,Ayam goreng sereh (paha/dada/sayap),Lauk,"Rp8,000",1,1,3,0,2,condiment,Lauk,7
+106,Ayam Chilipadi,Lauk,"Rp8,000",0,0,3,0,4,condiment,Lauk,6
+107,Tumis sawi hijau,Lainnya,"Rp5,000",1,1,2,0,2,condiment,Lainnya,6
+108,Tumis buncis tahu,Pendamping,"Rp3,000",1,1,2,0,2,condiment,Lauk,6
+109,Telur bacem,Pendamping,"Rp3,000",3,1,2,1,1,condiment,Lauk,6
+110,Ayam sambel hijau kemangi (paha/dada/sayap),Lauk,"Rp8,000",1,0,3,1,3,condiment,Lauk,7
+111,Ayam saos teriyaki,Lauk,"Rp8,000",3,0,3,1,1,condiment,Lauk,6
+112,Tahu Krispy,Pendamping,"Rp3,000",0,0,2,0,1,condiment,Lauk,6
+113,Ikan kembung  balado (10rb/ekor),Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,7
+114,Tumis toge kacang  panjang,Lainnya,"Rp5,000",1,1,2,0,2,condiment,Lainnya,6
+115,Ayam masak daun jeruk,Lauk,"Rp8,000",2,1,3,1,2,condiment,Lauk,7
+116,Ayam saos lada hitam,Lauk,"Rp8,000",1,1,3,0,3,condiment,Lauk,6
+117,Ikan tuna tumbuk,Lauk,"Rp8,000",1,0,3,0,3,condiment,Lauk,7
+118,Tumis kangkung,Sayur,"Rp3,000",0,1,3,0,3,condiment,Sayur,7
+119,Sayur Tuktuk (daun singkong,Sayur,"Rp3,000",0,2,2,1,2,condiment,Sayur,7
+120,Telur asam manis,Pendamping,"Rp3,000",2,0,2,2,1,condiment,Lauk,6
+121,Ayam bakar(BBQ),Lauk,"Rp8,000",3,0,3,1,2,condiment,Lauk,6
+122,Sambel ikan mairo,Lauk,"Rp8,000",0,0,3,1,4,condiment,Lauk,7
+123,Chicken popcron,Lauk,"Rp8,000",1,0,2,0,2,condiment,Lauk,6
+124,Bakso tumis,Lainnya,"Rp5,000",2,0,3,1,2,condiment,Lainnya,6
+125,Tempe orek kecap,Pendamping,"Rp3,000",3,1,2,0,1,condiment,Lauk,7
+126,Nasi putih,Lainnya,"Rp5,000",0,0,1,0,0,condiment,Karbo,6
+127,Nasi uduk,Lainnya,"Rp5,000",2,0,2,0,0,condiment,Karbo,7
+128,SOP makaroni,Sayur,"Rp3,000",1,0,3,1,1,condiment,Sayur,7
+129,Tumis sawi putih,Lainnya,"Rp5,000",1,1,2,0,2,condiment,Lainnya,7
+130,Telur rica,Pendamping,"Rp3,000",1,0,3,0,4,condiment,Lauk,6
+131,Ayam goreng serundeng (paha/dada/sayap),Lauk,"Rp8,000",1,1,3,0,2,condiment,Lauk,6
+132,Ikan kembung balado (13k/ekor),Lauk,"Rp13,000",1,0,3,0,4,condiment,Lauk,6
+133,Tahu goreng,Pendamping,"Rp3,000",0,0,2,0,1,condiment,Lauk,6
+134,Sambal goreng kentang,Pendamping,"Rp3,000",1,0,3,0,3,condiment,Lauk,6
+135,Lodeh labu Siam,Sayur,"Rp3,000",1,0,2,1,1,condiment,Sayur,7
+136,Ayam masak balado (paha/dada/sayap),Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,7
+137,Ikan goreng mujair (15k/ekor),Lauk,"Rp15,000",0,0,3,1,1,condiment,Lauk,6
+138,Ambari goreng,Lainnya,"Rp5,000",1,0,3,0,2,condiment,Lainnya,7
+139,Cah bayam,Lauk,"Rp8,000",0,1,2,0,2,condiment,Lauk,7
+140,Ayam ayam balado,Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,6
+141,Ayam crispy (paha/dada/sayap),Lauk,"Rp8,000",1,0,3,0,2,condiment,Lauk,6
+142,Ayam goreng serundeng,Lauk,"Rp8,000",1,1,3,0,2,condiment,Lauk,6
+143,Ayam saos cabe garam,Lauk,"Rp8,000",1,0,3,0,3,condiment,Lauk,7
+144,Ikan tumis lombok,Lauk,"Rp8,000",1,0,3,0,4,condiment,Lauk,7
+145,Sayur asam,Sayur,"Rp3,000",0,0,1,3,1,condiment,Sayur,7
+146,Sayur  jantung pisang,Sayur,"Rp3,000",1,2,2,1,1,condiment,Sayur,6
+147,Terong saos tiram,Sayur,"Rp3,000",1,0,3,1,2,condiment,Sayur,7
+148,Telur  baladao,Pendamping,"Rp3,000",1,0,3,0,4,condiment,Lauk,6
+149,Tumis buncis serundeng,Lainnya,"Rp5,000",1,1,2,0,2,condiment,Lainnya,6
+150,Gimbap,Lainnya,"Rp18,000",4,1,3,1,2,standalone,Lainnya,6
+151,Nasi Ayam Panggang,Lauk,,4,1,4,2,2,standalone,Lauk,6
+152,Nasi Ayam Lengkuas,Lauk,,2,3,3,3,2,standalone,Lauk,6
+153,Mie Nyemek,Lainnya,"Rp15,000",2,2,4,3,2,standalone,Lainnya,7
+154,Mie Kering,Lainnya,"Rp15,000",2,3,4,1,1,standalone,Lainnya,6
+155,Mie Bakso,Lainnya,"Rp18,000",2,1,4,1,1,standalone,Lainnya,7
+156,Mie Goreng Jawa,Lainnya,"Rp15,000",4,1,3,1,2,standalone,Lainnya,7
+157,Nasi Gila,Lainnya,"Rp12,000",2,1,3,1,4,standalone,Lainnya,7
+158,Yamien,Lainnya,"Rp15,000",4,1,3,1,1,standalone,Lainnya,6
+159,Tahu crispy,Pendamping,"Rp12,000",1,0,3,0,2,standalone,Lauk,6
+160,Ubi Goreng,Lainnya,"Rp15,000",2,1,4,1,2,standalone,Lainnya,7
+161,Pisang Goreng,Lainnya,"Rp15,000",4,1,2,1,1,standalone,Lainnya,7

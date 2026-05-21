@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  kantin-recommender:
+    build: .
+    container_name: OH-kantin_recommender
+    volumes:
+      - ./output:/app/output
+    environment:
+      - MPLBACKEND=Agg
