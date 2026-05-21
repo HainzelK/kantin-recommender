@@ -1,10 +1,10 @@
-version: "3.9"
-
 services:
   kantin-recommender:
-    build: .
-    container_name: OH-kantin_recommender
-    volumes:
-      - ./output:/app/output
+    image: orderherekiosk/fnb-ml-container:v2
+    container_name: OH-kantin_recommender-v2
+    
+    ports:
+      - "8067:8000"
+
     environment:
-      - MPLBACKEND=Agg
+      - PYTHONUNBUFFERED=1
