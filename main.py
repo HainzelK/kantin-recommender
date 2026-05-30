@@ -4,7 +4,15 @@ import pandas as pd
 import numpy as np
 import uvicorn
 import json
+import requests  # Tambahkan ini
 from sklearn.metrics import precision_score, recall_score, f1_score
+
+# ============================================================
+# KONFIGURASI SUPABASE
+# ============================================================
+SUPABASE_URL = "https://iwoiolguqbkyjssyifqr.supabase.co/rest/v1/food_ml"
+# GANTI DENGAN ANON KEY ANDA (Bisa ditemukan di Dashboard Supabase > Settings > API)
+SUPABASE_KEY = "MASUKKAN_SUPABASE_ANON_KEY_ANDA_DI_SINI"
 
 # ============================================================
 # FUNGSI PEMBERSIH DATA (Agar tidak error NumPy)
@@ -63,7 +71,6 @@ def recommend_food(user_intensity, user_desire, fav_profile, df, favorites_weigh
     
     return result.sort_values('final_score').head(k)
 
-# --- LOGIKA EVALUASI (Disesuaikan untuk API) ---
 def calculate_metrics(df_pool, user_intensity, user_desire, recommended_names):
     if df_pool.empty:
         return {"precision": 0, "recall": 0, "f1": 0}
@@ -73,7 +80,6 @@ def calculate_metrics(df_pool, user_intensity, user_desire, recommended_names):
     df_pool = df_pool.copy()
     df_pool['pure_dist'] = actual_distances
 
-    # Ambil 20% menu terbaik sebagai 'Ground Truth' (Relevan)
     threshold_count = max(1, int(len(df_pool) * 0.20))
     top_relevant_names = df_pool.nsmallest(threshold_count, 'pure_dist')['Nama Menu'].tolist()
 
@@ -100,14 +106,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load data
-df_global = pd.read_csv("_kantin_filled.csv")
-df_global.columns = df_global.columns.str.strip()
-if "Kode_Vendor" in df_global.columns:
-    df_global = df_global.rename(columns={"Kode_Vendor": "Vendor"})
+# Fungsi untuk mengambil data dari Supabase
+def fetch_data_from_supabase():
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}"
+    }
+    response = requests.get(f"{SUPABASE_URL}?select=*", headers=headers)
+    if response.status_code != 200:
+        raise Exception(f"Gagal mengambil data Supabase: {response.text}")
+    
+    data = response.json()
+    df = pd.DataFrame(data)
+    
+    # Pembersihan kolom seperti logika awal Anda
+    df.columns = df.columns.str.strip()
+    if "Kode_Vendor" in df.columns:
+        df = df.rename(columns={"Kode_Vendor": "Vendor"})
+    
+    return df
 
 @app.get("/test-recommend")
 async def test_recommend():
+    # Tarik data terbaru dari Supabase setiap kali request (atau bisa ditaruh di luar jika ingin cache)
+    try:
+        df_global = fetch_data_from_supabase()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
     # DATA HARDCODE UNTUK TEST
     u_intensity = np.array([2, 1, 2, 5, 3], dtype=float)
     u_desire = np.array([2, 1, 4, 5, 2], dtype=float)
@@ -123,7 +149,7 @@ async def test_recommend():
 
         for vendor in list_vendor:
             df_vendor = df_global[df_global['Vendor'] == vendor]
-            all_vendor_recs_df = [] # Untuk nampung semua recs guna evaluasi
+            all_vendor_recs_df = [] 
 
             # 1. Slot logic
             formatted_slots = {}
