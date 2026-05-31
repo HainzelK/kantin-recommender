@@ -12,7 +12,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 # ============================================================
 SUPABASE_URL = "https://iwoiolguqbkyjssyifqr.supabase.co/rest/v1/food_ml"
 # GANTI DENGAN ANON KEY ANDA (Bisa ditemukan di Dashboard Supabase > Settings > API)
-SUPABASE_KEY = "MASUKKAN_SUPABASE_ANON_KEY_ANDA_DI_SINI"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3b2lvbGd1cWJreWpzc3lpZnFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MTYxODIsImV4cCI6MjA5MzE5MjE4Mn0.Ufz1cWschQbKbdyG3VGOPb_c_4B4UzJfrGeUCBthiWA"
 
 # ============================================================
 # FUNGSI PEMBERSIH DATA (Agar tidak error NumPy)
