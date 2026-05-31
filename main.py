@@ -3,36 +3,17 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import numpy as np
 import uvicorn
-import json
-import requests  # Tambahkan ini
+import requests  
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 # ============================================================
 # KONFIGURASI SUPABASE
 # ============================================================
 SUPABASE_URL = "https://iwoiolguqbkyjssyifqr.supabase.co/rest/v1/food_ml"
-# GANTI DENGAN ANON KEY ANDA (Bisa ditemukan di Dashboard Supabase > Settings > API)
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3b2lvbGd1cWJreWpzc3lpZnFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MTYxODIsImV4cCI6MjA5MzE5MjE4Mn0.Ufz1cWschQbKbdyG3VGOPb_c_4B4UzJfrGeUCBthiWA"
 
 # ============================================================
-# FUNGSI PEMBERSIH DATA (Agar tidak error NumPy)
-# ============================================================
-def clean_for_json(obj):
-    if isinstance(obj, dict):
-        return {k: clean_for_json(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [clean_for_json(i) for i in obj]
-    elif isinstance(obj, np.integer):
-        return int(obj)
-    elif isinstance(obj, np.floating):
-        return float(obj)
-    elif isinstance(obj, np.ndarray):
-        return obj.tolist()
-    else:
-        return obj
-
-# ============================================================
-# 1. LOGIKA ML ASLI ANDA
+# 1. LOGIKA ML & PEMBERSIH DATA
 # ============================================================
 RASA_COLS = ['Manis', 'Pahit', 'Asin', 'Asam', 'Pedas']
 SLOT_CONFIG = {
@@ -42,6 +23,14 @@ SLOT_CONFIG = {
     'Lainnya': {'required': False},
     'Minuman': {'required': False},
 }
+
+def clean_for_json(obj):
+    if isinstance(obj, dict): return {k: clean_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, list): return [clean_for_json(i) for i in obj]
+    elif isinstance(obj, np.integer): return int(obj)
+    elif isinstance(obj, np.floating): return float(obj)
+    elif isinstance(obj, np.ndarray): return obj.tolist()
+    else: return obj
 
 def weighted_euclidean(food_matrix, user_intensity, user_desire):
     diff = food_matrix - user_intensity
@@ -65,14 +54,16 @@ def recommend_food(user_intensity, user_desire, fav_profile, df, favorites_weigh
     result['similarity_bonus'] = bonus
     result['final_score'] = base_dist - bonus
     
-    max_score, min_score = result['final_score'].max(), result['final_score'].min()
-    score_range = max_score - min_score if max_score != min_score else 1
-    result['match_pct'] = (100 * (1 - ((result['final_score'] - min_score) / score_range))).round(1)
+    max_s, min_s = result['final_score'].max(), result['final_score'].min()
+    score_range = max_s - min_s if max_s != min_s else 1
+    result['match_pct'] = (100 * (1 - ((result['final_score'] - min_s) / score_range))).round(1)
     
-    return result.sort_values('final_score').head(k)
+    # Return kolom yang diminta untuk diperlihatkan
+    cols = ['Nama Menu', 'base_distance', 'similarity_bonus', 'final_score', 'match_pct']
+    return result.sort_values('final_score').head(k)[cols]
 
 def calculate_metrics(df_pool, user_intensity, user_desire, recommended_names):
-    if df_pool.empty:
+    if df_pool.empty or not recommended_names:
         return {"precision": 0, "recall": 0, "f1": 0}
 
     food_matrix = df_pool[RASA_COLS].values.astype(float)
@@ -89,9 +80,7 @@ def calculate_metrics(df_pool, user_intensity, user_desire, recommended_names):
     return {
         "precision": round(precision_score(y_true, y_pred, zero_division=0), 2),
         "recall": round(recall_score(y_true, y_pred, zero_division=0), 2),
-        "f1_score": round(f1_score(y_true, y_pred, zero_division=0), 2),
-        "total_menu_in_vendor": len(df_pool),
-        "relevant_menu_count": threshold_count
+        "f1_score": round(f1_score(y_true, y_pred, zero_division=0), 2)
     }
 
 # ============================================================
@@ -106,91 +95,80 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Fungsi untuk mengambil data dari Supabase
 def fetch_data_from_supabase():
-    headers = {
-        "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}"
-    }
+    headers = {"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"}
     response = requests.get(f"{SUPABASE_URL}?select=*", headers=headers)
     if response.status_code != 200:
-        raise Exception(f"Gagal mengambil data Supabase: {response.text}")
+        raise Exception(f"Gagal: {response.text}")
     
-    data = response.json()
-    df = pd.DataFrame(data)
-    
-    # Pembersihan kolom seperti logika awal Anda
+    df = pd.DataFrame(response.json())
     df.columns = df.columns.str.strip()
-    if "Kode_Vendor" in df.columns:
-        df = df.rename(columns={"Kode_Vendor": "Vendor"})
+    
+    # PERBAIKAN: Mapping 'Kode Vendor' menjadi 'Vendor'
+    if "Kode Vendor" in df.columns:
+        df = df.rename(columns={"Kode Vendor": "Vendor"})
     
     return df
 
 @app.get("/test-recommend")
 async def test_recommend():
-    # Tarik data terbaru dari Supabase setiap kali request (atau bisa ditaruh di luar jika ingin cache)
     try:
         df_global = fetch_data_from_supabase()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-    # DATA HARDCODE UNTUK TEST
-    u_intensity = np.array([2, 1, 2, 5, 3], dtype=float)
-    u_desire = np.array([2, 1, 4, 5, 2], dtype=float)
-    u_favorites = ["Mie Kering", "Mie Bakso", "Nasi Gila"]
-    k_val = 5
-    
-    try:
+        
+        # INPUT SESUAI CONTOH ANDA
+        u_intensity = np.array([2, 1, 2, 5, 3], dtype=float)
+        u_desire = np.array([2, 1, 4, 5, 2], dtype=float)
+        u_favorites = ['Mie Kering', 'Mie Bakso', 'Nasi Gila']
+        
+        # Hitung Profile Favorit
         matched = df_global[df_global['Nama Menu'].isin(u_favorites)]
         fav_profile = matched[RASA_COLS].mean(axis=0).values if not matched.empty else None
         
-        list_vendor = sorted(df_global['Vendor'].unique())
-        final_response = []
+        final_result = {
+            "dataset_info": {
+                "total_menu": len(df_global),
+                "total_vendor": int(df_global['Vendor'].nunique())
+            },
+            "user_input": {
+                "intensity": u_intensity.tolist(),
+                "desire": u_desire.tolist(),
+                "favorites": u_favorites
+            },
+            "favorite_profile": {col: round(val, 2) for col, val in zip(RASA_COLS, fav_profile)} if fav_profile is not None else "None",
+            "vendors": []
+        }
 
-        for vendor in list_vendor:
+        for vendor in sorted(df_global['Vendor'].unique()):
             df_vendor = df_global[df_global['Vendor'] == vendor]
-            all_vendor_recs_df = [] 
-
-            # 1. Slot logic
-            formatted_slots = {}
-            component_df = df_vendor[df_vendor['Kategori'] == 'condiment']
-            for slot, cfg in SLOT_CONFIG.items():
-                slot_df = component_df[component_df['Tipe_Makanan_Simplified'] == slot]
-                if not slot_df.empty:
-                    recs = recommend_food(u_intensity, u_desire, fav_profile, slot_df, 0.3, k_val)
-                    all_vendor_recs_df.append(recs)
-                    formatted_slots[slot] = {
-                        "required": cfg['required'],
-                        "items": recs[['Nama Menu', 'match_pct']].to_dict(orient='records')
-                    }
-
-            # 2. Standalone logic
-            standalone_df = df_vendor[df_vendor['Kategori'] == 'standalone']
-            standalone_recs = recommend_food(u_intensity, u_desire, fav_profile, standalone_df, 0.3, k_val)
-            if not standalone_recs.empty:
-                all_vendor_recs_df.append(standalone_recs)
+            all_rec_names = []
             
-            # --- HITUNG EVALUASI UNTUK VENDOR INI ---
-            if all_vendor_recs_df:
-                combined_recs = pd.concat(all_vendor_recs_df).drop_duplicates(subset=['Nama Menu'])
-                rec_names = combined_recs['Nama Menu'].tolist()
-                eval_metrics = calculate_metrics(df_vendor, u_intensity, u_desire, rec_names)
-            else:
-                eval_metrics = {"precision": 0, "recall": 0, "f1": 0}
+            # Slot Logic (Component)
+            comp_results = {}
+            comp_df = df_vendor[df_vendor['Kategori'].str.lower() == 'condiment']
+            for slot, cfg in SLOT_CONFIG.items():
+                slot_df = comp_df[comp_df['Tipe_Makanan_Simplified'] == slot]
+                recs = recommend_food(u_intensity, u_desire, fav_profile, slot_df)
+                if not recs.empty:
+                    all_rec_names.extend(recs['Nama Menu'].tolist())
+                    comp_results[slot] = recs.to_dict(orient='records')
 
-            final_response.append({
-                "vendor": vendor,
-                "evaluation": eval_metrics,
-                "recommendations": {
-                    "components": formatted_slots,
-                    "standalone": standalone_recs[['Nama Menu', 'match_pct']].to_dict(orient='records') if not standalone_recs.empty else []
-                }
+            # Standalone Logic
+            standalone_df = df_vendor[df_vendor['Kategori'].str.lower() == 'standalone']
+            standalone_recs = recommend_food(u_intensity, u_desire, fav_profile, standalone_df)
+            if not standalone_recs.empty:
+                all_rec_names.extend(standalone_recs['Nama Menu'].tolist())
+
+            # Metrik
+            metrics = calculate_metrics(df_vendor, u_intensity, u_desire, list(set(all_rec_names)))
+
+            final_result["vendors"].append({
+                "vendor_id": vendor,
+                "slots": comp_results,
+                "standalone": standalone_recs.to_dict(orient='records') if not standalone_recs.empty else [],
+                "evaluation": metrics
             })
 
-        return clean_for_json({
-            "status": "success",
-            "data": final_response
-        })
+        return clean_for_json(final_result)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
