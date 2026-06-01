@@ -1,7 +1,7 @@
 services:
   kantin-recommender:
-    image: orderherekiosk/fnb-ml-container:v3
-    container_name: OH-kantin_recommender-v3
+    image: orderherekiosk/fnb-ml-container:v4
+    container_name: OH-kantin_recommender-v4
     
     ports:
       - "8067:8000"

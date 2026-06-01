@@ -10,3 +10,4 @@ venv/
 .gitignore
 *.log
 README.md
+_legacy/
