@@ -16,6 +16,7 @@ EXTERNAL_PREF_URL = "https://api.moodbites.qzz.io/api/v1/external"
 
 RASA_COLS = ['Manis', 'Pahit', 'Asin', 'Asam', 'Pedas']
 SLOT_CONFIG = ['Karbo', 'Lauk', 'Sayur', 'Lainnya', 'Minuman']
+K_DEFAULT = 5  # Menentukan Top 5 Rekomendasi
 
 app = FastAPI()
 
@@ -44,7 +45,7 @@ def clean_for_json(obj):
         return obj
 
 # ============================================================
-# ML CORE (INI FUNGSI YANG TADI HILANG)
+# ML CORE
 # ============================================================
 def weighted_euclidean(food_matrix, user_intensity, user_desire):
     diff = food_matrix - user_intensity
@@ -58,7 +59,10 @@ def similarity_bonus_score(food_matrix, fav_profile, weight):
     distances = np.sqrt(np.sum(diff ** 2, axis=1))
     return weight * (1.0 / (1.0 + distances))
 
-def recommend_all_items(user_intensity, user_desire, fav_profile, df, favorites_weight=0.3):
+def recommend_items(user_intensity, user_desire, fav_profile, df, favorites_weight=0.3, k=5):
+    """
+    Fungsi rekomendasi utama dengan parameter k (Top-K)
+    """
     if df.empty: return pd.DataFrame()
     
     food_matrix = df[RASA_COLS].values.astype(float)
@@ -73,17 +77,19 @@ def recommend_all_items(user_intensity, user_desire, fav_profile, df, favorites_
     score_range = max_s - min_s if max_s != min_s else 1
     result['match_pct'] = (100 * (1 - ((result['final_score'] - min_s) / score_range))).round(1)
 
-    return result.sort_values('final_score')
+    # Hanya ambil top K
+    return result.sort_values('final_score').head(k)
 
 def calculate_metrics(df_pool, user_intensity, user_desire, recommended_names):
     if df_pool.empty or not recommended_names:
-        return {"precision": 0, "recall": 0, "f1": 0}
+        return {"precision": 0, "recall": 0, "f1_score": 0}
 
     food_matrix = df_pool[RASA_COLS].values.astype(float)
     actual_distances = weighted_euclidean(food_matrix, user_intensity, user_desire)
     df_pool = df_pool.copy()
     df_pool['pure_dist'] = actual_distances
 
+    # Ground truth: 20% item terdekat secara rasa murni dianggap relevan
     threshold_count = max(1, int(len(df_pool) * 0.20))
     top_relevant_names = df_pool.nsmallest(threshold_count, 'pure_dist')['Nama Menu'].tolist()
 
@@ -124,7 +130,7 @@ async def recommend_external(mood: str, user_id: str):
         full_data = fetch_external_preferences(mood, user_id)
         df_global = fetch_data_from_supabase()
 
-        # FIX PATH: Akses ke dalam key 'preferences' sesuai struktur JSON Anda
+        # 2. Extract Preferences
         pref_data = full_data.get("preferences", {})
         int_map = pref_data.get("intensity", {})
         des_map = pref_data.get("desire", {})
@@ -156,40 +162,42 @@ async def recommend_external(mood: str, user_id: str):
         fav_profile = matched[RASA_COLS].mean(axis=0).values if not matched.empty else None
 
         final_result = {
-            "metadata": {"mood": mood, "user_id": user_id},
+            "metadata": {"mood": mood, "user_id": user_id, "k_limit": K_DEFAULT},
             "vendors": []
         }
 
         # 4. Filter Per Vendor
         for vendor in sorted(df_global['Vendor'].unique()):
             df_vendor = df_global[df_global['Vendor'] == vendor]
-            all_rec_names = []
+            all_rec_names_for_metrics = []
 
-            # --- CONDIMENTS (Case-Insensitive Fix) ---
+            # --- CONDIMENTS (Top 5 per Slot) ---
             cond_results = {}
             df_cond = df_vendor[df_vendor['Kategori'].str.upper() == 'CONDIMENT']
             
             for slot in SLOT_CONFIG:
-                # Membandingkan slot (Lauk/SAYUR) secara case-insensitive
                 mask = df_cond['Tipe_Makanan_Simplified'].str.upper() == slot.upper()
                 slot_df = df_cond[mask]
                 
                 if not slot_df.empty:
-                    recs = recommend_all_items(u_intensity, u_desire, fav_profile, slot_df)
-                    all_rec_names.extend(recs['Nama Menu'].tolist())
+                    # Menggunakan k=K_DEFAULT (5)
+                    recs = recommend_items(u_intensity, u_desire, fav_profile, slot_df, k=K_DEFAULT)
+                    all_rec_names_for_metrics.extend(recs['Nama Menu'].tolist())
                     cond_results[slot] = recs.to_dict(orient='records')
                 else:
                     cond_results[slot] = []
 
-            # --- STANDALONE ---
+            # --- STANDALONE (Top 5) ---
             df_stand = df_vendor[df_vendor['Kategori'].str.upper() == 'STANDALONE']
             stand_recs = []
             if not df_stand.empty:
-                recs_st = recommend_all_items(u_intensity, u_desire, fav_profile, df_stand)
-                all_rec_names.extend(recs_st['Nama Menu'].tolist())
+                # Menggunakan k=K_DEFAULT (5)
+                recs_st = recommend_items(u_intensity, u_desire, fav_profile, df_stand, k=K_DEFAULT)
+                all_rec_names_for_metrics.extend(recs_st['Nama Menu'].tolist())
                 stand_recs = recs_st.to_dict(orient='records')
 
-            metrics = calculate_metrics(df_vendor, u_intensity, u_desire, all_rec_names[:10])
+            # Evaluasi dihitung berdasarkan gabungan semua rekomendasi yang diberikan ke user
+            metrics = calculate_metrics(df_vendor, u_intensity, u_desire, list(set(all_rec_names_for_metrics)))
 
             final_result["vendors"].append({
                 "vendor_id": vendor,
@@ -201,6 +209,8 @@ async def recommend_external(mood: str, user_id: str):
         return clean_for_json(final_result)
 
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
