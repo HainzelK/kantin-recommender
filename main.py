@@ -169,7 +169,13 @@ async def recommend_external(mood: str, user_id: str):
         fav_profile = matched[RASA_COLS].mean(axis=0).values if not matched.empty else None
 
         final_result = {
-            "metadata": {"mood": mood, "user_id": user_id, "k_limit": K_DEFAULT},
+            "metadata": {
+                "mood": mood, 
+                "user_id": user_id, 
+                "k_limit": K_DEFAULT,
+                "user_intensity": u_intensity,
+                "user_desire": u_desire
+            },
             "vendors": []
         }
 
