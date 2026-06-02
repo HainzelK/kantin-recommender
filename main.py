@@ -16,7 +16,7 @@ EXTERNAL_PREF_URL = "https://api.moodbites.qzz.io/api/v1/external"
 
 RASA_COLS = ['Manis', 'Pahit', 'Asin', 'Asam', 'Pedas']
 SLOT_CONFIG = ['Karbo', 'Lauk', 'Sayur', 'Lainnya', 'Minuman']
-K_DEFAULT = 5  # Menentukan Top 5 Rekomendasi
+K_DEFAULT = 5  # Top 5 Rekomendasi
 
 app = FastAPI()
 
@@ -60,9 +60,6 @@ def similarity_bonus_score(food_matrix, fav_profile, weight):
     return weight * (1.0 / (1.0 + distances))
 
 def recommend_items(user_intensity, user_desire, fav_profile, df, favorites_weight=0.3, k=5):
-    """
-    Fungsi rekomendasi utama dengan parameter k (Top-K)
-    """
     if df.empty: return pd.DataFrame()
     
     food_matrix = df[RASA_COLS].values.astype(float)
@@ -72,34 +69,44 @@ def recommend_items(user_intensity, user_desire, fav_profile, df, favorites_weig
     result = df.copy()
     result['final_score'] = base_dist - bonus
 
-    # Normalisasi Match Percentage (0-100%)
     max_s, min_s = result['final_score'].max(), result['final_score'].min()
     score_range = max_s - min_s if max_s != min_s else 1
     result['match_pct'] = (100 * (1 - ((result['final_score'] - min_s) / score_range))).round(1)
 
-    # Hanya ambil top K
     return result.sort_values('final_score').head(k)
 
+# --- FUNGSI EVALUASI FLEKSIBEL ---
 def calculate_metrics(df_pool, user_intensity, user_desire, recommended_names):
     if df_pool.empty or not recommended_names:
         return {"precision": 0, "recall": 0, "f1_score": 0}
 
+    # 1. Hitung Jarak Murni (Ground Truth)
     food_matrix = df_pool[RASA_COLS].values.astype(float)
     actual_distances = weighted_euclidean(food_matrix, user_intensity, user_desire)
-    df_pool = df_pool.copy()
-    df_pool['pure_dist'] = actual_distances
+    df_temp = df_pool.copy()
+    df_temp['pure_dist'] = actual_distances
 
-    # Ground truth: 20% item terdekat secara rasa murni dianggap relevan
-    threshold_count = max(1, int(len(df_pool) * 0.20))
-    top_relevant_names = df_pool.nsmallest(threshold_count, 'pure_dist')['Nama Menu'].tolist()
+    # 2. Threshold Dinamis: 
+    # Mengambil mana yang lebih besar antara 25% dari total menu atau jumlah yang direkomendasikan
+    n_total = len(df_pool)
+    n_rec = len(recommended_names)
+    threshold_count = max(min(n_rec, n_total), int(n_total * 0.25))
+    threshold_count = max(1, threshold_count)
 
-    y_true = df_pool['Nama Menu'].apply(lambda x: 1 if x in top_relevant_names else 0).values
-    y_pred = df_pool['Nama Menu'].apply(lambda x: 1 if x in recommended_names else 0).values
+    top_relevant_names = df_temp.nsmallest(threshold_count, 'pure_dist')['Nama Menu'].tolist()
+
+    # 3. Hitung Skor
+    y_true = df_temp['Nama Menu'].apply(lambda x: 1 if x in top_relevant_names else 0).values
+    y_pred = df_temp['Nama Menu'].apply(lambda x: 1 if x in recommended_names else 0).values
+
+    precision = float(precision_score(y_true, y_pred, zero_division=0))
+    recall = float(recall_score(y_true, y_pred, zero_division=0))
+    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
 
     return {
-        "precision": round(float(precision_score(y_true, y_pred, zero_division=0)), 2),
-        "recall": round(float(recall_score(y_true, y_pred, zero_division=0)), 2),
-        "f1_score": round(float(f1_score(y_true, y_pred, zero_division=0)), 2)
+        "precision": round(precision, 2),
+        "recall": round(recall, 2),
+        "f1_score": round(f1, 2)
     }
 
 # ============================================================
@@ -169,9 +176,9 @@ async def recommend_external(mood: str, user_id: str):
         # 4. Filter Per Vendor
         for vendor in sorted(df_global['Vendor'].unique()):
             df_vendor = df_global[df_global['Vendor'] == vendor]
-            all_rec_names_for_metrics = []
+            all_rec_names = []
 
-            # --- CONDIMENTS (Top 5 per Slot) ---
+            # --- CONDIMENTS ---
             cond_results = {}
             df_cond = df_vendor[df_vendor['Kategori'].str.upper() == 'CONDIMENT']
             
@@ -180,24 +187,23 @@ async def recommend_external(mood: str, user_id: str):
                 slot_df = df_cond[mask]
                 
                 if not slot_df.empty:
-                    # Menggunakan k=K_DEFAULT (5)
                     recs = recommend_items(u_intensity, u_desire, fav_profile, slot_df, k=K_DEFAULT)
-                    all_rec_names_for_metrics.extend(recs['Nama Menu'].tolist())
+                    all_rec_names.extend(recs['Nama Menu'].tolist())
                     cond_results[slot] = recs.to_dict(orient='records')
                 else:
                     cond_results[slot] = []
 
-            # --- STANDALONE (Top 5) ---
+            # --- STANDALONE ---
             df_stand = df_vendor[df_vendor['Kategori'].str.upper() == 'STANDALONE']
             stand_recs = []
             if not df_stand.empty:
-                # Menggunakan k=K_DEFAULT (5)
                 recs_st = recommend_items(u_intensity, u_desire, fav_profile, df_stand, k=K_DEFAULT)
-                all_rec_names_for_metrics.extend(recs_st['Nama Menu'].tolist())
+                all_rec_names.extend(recs_st['Nama Menu'].tolist())
                 stand_recs = recs_st.to_dict(orient='records')
 
-            # Evaluasi dihitung berdasarkan gabungan semua rekomendasi yang diberikan ke user
-            metrics = calculate_metrics(df_vendor, u_intensity, u_desire, list(set(all_rec_names_for_metrics)))
+            # --- EVALUASI ---
+            unique_rec_names = list(set(all_rec_names))
+            metrics = calculate_metrics(df_vendor, u_intensity, u_desire, unique_rec_names)
 
             final_result["vendors"].append({
                 "vendor_id": vendor,
